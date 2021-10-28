@@ -3,7 +3,7 @@
   <div *ngFor="let pokemon of pokemonList" class="col-sm-2 col-lg-4">
     <div class="card">
       <img
-        [src]="'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/'+getId(pokemon)+'.png'"
+        [src]="pokemon.sprites.other['official-artwork'].front_default"
         class="card-img-top"
         alt="Pokemon artwork"
       >

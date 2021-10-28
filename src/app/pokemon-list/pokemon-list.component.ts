@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {PokemonLite} from '../../models/pokemon-lite';
 import {PokeapiService} from '../services/pokeapi.service';
 import {PokemonList} from '../../models/pokemon-list';
+import {Pokemon} from '../../models/pokemon';
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-pokemon-list',
@@ -10,7 +12,7 @@ import {PokemonList} from '../../models/pokemon-list';
 })
 export class PokemonListComponent implements OnInit {
 
-  public pokemonList: Array<PokemonLite> = [];
+  public pokemonList: Array<Pokemon> = [];
 
   constructor(
     private pokeapiService: PokeapiService,
@@ -18,7 +20,13 @@ export class PokemonListComponent implements OnInit {
 
   ngOnInit(): void {
     this.pokeapiService.pokemonList.subscribe((data: PokemonList) => {
-      this.pokemonList = data.results;
+      const dataObservable = data.results.map((pokemon: PokemonLite) => {
+        return this.pokeapiService.getPokemonDetail(this.getId(pokemon));
+      });
+
+      forkJoin(dataObservable).subscribe((fullPokemon) => {
+        this.pokemonList = fullPokemon;
+      });
     });
   }
 
