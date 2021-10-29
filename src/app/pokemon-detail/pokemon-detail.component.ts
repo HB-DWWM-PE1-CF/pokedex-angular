@@ -3,7 +3,6 @@ import {ActivatedRoute} from '@angular/router';
 import {PokeapiService} from '../services/pokeapi.service';
 import {Pokemon} from '../../models/pokemon';
 import {Evolution} from '../../models/evolution';
-import {EvolutionChain} from '../../models/evolution-chain';
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -13,7 +12,6 @@ import {EvolutionChain} from '../../models/evolution-chain';
 export class PokemonDetailComponent implements OnInit {
 
   public pokemon: Pokemon|null = null;
-
   public evolution: Evolution|null = null;
 
   constructor(
@@ -35,5 +33,21 @@ export class PokemonDetailComponent implements OnInit {
           });
         });
     });
+  }
+
+  public get nextId(): string|null {
+    if (this.pokemon === null) {
+      return null;
+    }
+
+    return (this.pokemon.id + 1).toString();
+  }
+
+  public get previousId(): string|null {
+    if (this.pokemon === null || this.pokemon.id < 2) {
+      return null;
+    }
+
+    return (this.pokemon.id - 1).toString();
   }
 }

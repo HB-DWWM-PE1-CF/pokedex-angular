@@ -3,6 +3,13 @@
     {{ pokemon.name }}
   </h1>
 
+  <div class="text-center my-3">
+    <div class="btn-group" role="group">
+      <a *ngIf="previousId" [routerLink]="['/detail', previousId]" class="btn btn-outline-primary">Previous</a>
+      <a *ngIf="nextId" [routerLink]="['/detail', nextId]" class="btn btn-outline-primary">Next</a>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-md-6">
       <img
