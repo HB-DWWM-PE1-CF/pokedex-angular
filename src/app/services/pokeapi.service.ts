@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable, Subscriber} from 'rxjs';
 import {PokemonList} from '../../models/pokemon-list';
 import {Pokemon} from '../../models/pokemon';
+import {PokemonFullList} from '../../models/pokemon-full-list';
+import {PokemonLite} from '../../models/pokemon-lite';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +19,33 @@ export class PokeapiService {
   /**
    * Prepare the request to get Pokemon list.
    */
-  public get pokemonList(): Observable<PokemonList> {
-    return this.httpClient.get<PokemonList>('https://pokeapi.co/api/v2/pokemon');
+  public getPokemonList(page: number = 1): Observable<PokemonFullList> {
+    // Create a new observable to transform API Pokemon list with PokemonLite into a list of full Pokemon detail.
+    return new Observable((subscriber: Subscriber<PokemonFullList>) => {
+      this.httpClient.get<PokemonList>(`https://pokeapi.co/api/v2/pokemon`)
+        .subscribe((data: PokemonList) => {
+          // Here, the response is received.
+
+          // This map create a new Array, based on the Pokemon list retrieved from API.
+          const dataObservables = data.results.map((pokemon: PokemonLite) => {
+            // It convert the PokemonLite into an Observable to get Pokemon full detail.
+            return this.getPokemonDetail(this.getId(pokemon));
+          });
+
+          // Using forkJoin to trigger all previous Observable and wait all of them to finish.
+          forkJoin(dataObservables).subscribe((fullPokemon: Array<Pokemon>) => {
+            // When all finished, we get an Array will all the results from each Observable, in the same order as the dataObservables array.
+
+            // Affect the results of all Observable into our custom Observable.
+            subscriber.next({
+              count: data.count,
+              items: fullPokemon,
+            });
+            // Tell to Observable that its finished.
+            subscriber.complete();
+          });
+        });
+    });
   }
 
   /**
@@ -26,5 +53,14 @@ export class PokeapiService {
    */
   public getPokemonDetail(id: string): Observable<Pokemon> {
     return this.httpClient.get<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${id}`);
+  }
+
+  public getId(pokemon: PokemonLite): string {
+    const result = pokemon.url.match(/^https:\/\/pokeapi\.co\/api\/v2\/pokemon\/([0-9]+)\/?$/);
+    if (result) {
+      return result[1];
+    }
+
+    return '';
   }
 }
