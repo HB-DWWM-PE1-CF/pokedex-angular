@@ -1,15 +1,87 @@
-<div *ngIf="pokemon !== null" class="text-center">
+<div *ngIf="pokemon !== null">
   <h1>
     {{ pokemon.name }}
   </h1>
 
-  <ul class="list-group">
-    <li *ngFor="let type of pokemon.types" class="list-group-item">
-      {{ type.type.name }}
-    </li>
-  </ul>
+  <div class="row">
+    <div class="col-md-6">
+      <img
+        [src]="pokemon.sprites.other['official-artwork'].front_default"
+        class="img-thumbnail"
+        alt="Official artwork"
+        title="Official artwork"
+      >
+      <div class="d-flex my-3">
+        <img
+          [src]="pokemon.sprites.front_default"
+          class="img-thumbnail"
+          alt="Front default"
+          title="Front default"
+        >
+        <img
+          [src]="pokemon.sprites.back_default"
+          class="img-thumbnail"
+          alt="Back default"
+          title="Back default"
+        >
+      </div>
+    </div>
 
-  <img [src]="pokemon.sprites.other['official-artwork'].front_default">
-  <img [src]="pokemon.sprites.front_default">
-  <img [src]="pokemon.sprites.back_default">
+    <div class="col-md-6">
+      <h2>Global information</h2>
+      <dl class="row">
+        <dt class="col-sm-3">ID</dt>
+        <dd class="col-sm-9">
+          {{ pokemon.id }}
+        </dd>
+
+        <ng-template [ngIf]="pokemon.types">
+          <dt class="col-sm-3">Types</dt>
+          <dd class="col-sm-9">
+            <span *ngFor="let type of pokemon.types" class="badge bg-secondary me-1">
+              {{ type.type.name }}
+            </span>
+          </dd>
+        </ng-template>
+
+        <dt class="col-sm-3">Height</dt>
+        <dd class="col-sm-9">
+          {{ pokemon.height }}
+        </dd>
+
+        <dt class="col-sm-3">Weight</dt>
+        <dd class="col-sm-9">
+          {{ pokemon.weight }}
+        </dd>
+
+        <dt class="col-sm-3">Pokedex Order</dt>
+        <dd class="col-sm-9">
+          {{ pokemon.order }}
+        </dd>
+
+      </dl>
+
+      <ng-template [ngIf]="pokemon.stats">
+        <h2>Basic stats</h2>
+        <table class="table">
+          <thead>
+          <tr>
+            <th></th>
+            <th *ngFor="let stat of pokemon.stats">{{ stat.stat.name }}</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Base</th>
+              <td *ngFor="let stat of pokemon.stats">{{ stat.base_stat }}</td>
+            </tr>
+            <tr>
+              <th>Effort</th>
+              <td *ngFor="let stat of pokemon.stats">{{ stat.effort }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-template>
+    </div>
+  </div>
 </div>
