@@ -5,6 +5,8 @@ import {PokemonList} from '../../models/pokemon-list';
 import {Pokemon} from '../../models/pokemon';
 import {PokemonFullList} from '../../models/pokemon-full-list';
 import {PokemonLite} from '../../models/pokemon-lite';
+import {PokemonSpecie} from '../../models/pokemon-specie';
+import {Evolution} from '../../models/evolution';
 
 @Injectable({
   providedIn: 'root'
@@ -67,5 +69,18 @@ export class PokeapiService {
     }
 
     return '';
+  }
+
+  public getEvolutionDetail(pokemon: Pokemon): Observable<Evolution|null> {
+    return new Observable<Evolution | null>((subscriber: Subscriber<Evolution|null>) => {
+      this.httpClient.get<PokemonSpecie>(pokemon.species.url)
+        .subscribe((specie: PokemonSpecie) => {
+          this.httpClient.get<Evolution>(specie.evolution_chain.url)
+            .subscribe((evol: Evolution) => {
+              subscriber.next(evol);
+              subscriber.complete();
+            });
+        });
+    });
   }
 }

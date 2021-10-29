@@ -36,4 +36,8 @@ export interface Pokemon {
       url: string;
     };
   }>;
+  species: {
+    name: string;
+    url: string;
+  };
 }
