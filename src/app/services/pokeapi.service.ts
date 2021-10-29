@@ -10,6 +10,7 @@ import {PokemonLite} from '../../models/pokemon-lite';
   providedIn: 'root'
 })
 export class PokeapiService {
+  private static limit = 21;
 
   constructor(
     // Inject the HttpClient service given by Angular.
@@ -20,9 +21,11 @@ export class PokeapiService {
    * Prepare the request to get Pokemon list.
    */
   public getPokemonList(page: number = 1): Observable<PokemonFullList> {
+    const offset = (page - 1) * PokeapiService.limit;
+
     // Create a new observable to transform API Pokemon list with PokemonLite into a list of full Pokemon detail.
     return new Observable((subscriber: Subscriber<PokemonFullList>) => {
-      this.httpClient.get<PokemonList>(`https://pokeapi.co/api/v2/pokemon`)
+      this.httpClient.get<PokemonList>(`https://pokeapi.co/api/v2/pokemon?limit=${PokeapiService.limit}&offset=${offset}`)
         .subscribe((data: PokemonList) => {
           // Here, the response is received.
 
@@ -39,6 +42,8 @@ export class PokeapiService {
             // Affect the results of all Observable into our custom Observable.
             subscriber.next({
               count: data.count,
+              currentPage: page,
+              nextPage: data.next ? (page + 1) : null,
               items: fullPokemon,
             });
             // Tell to Observable that its finished.

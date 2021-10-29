@@ -7,7 +7,7 @@ import {PokemonLite} from './pokemon-lite';
  */
 export interface PokemonList {
   count: number;
-  next: string;
-  previous: string;
+  next: string|null;
+  previous: string|null;
   results: Array<PokemonLite>;
 }

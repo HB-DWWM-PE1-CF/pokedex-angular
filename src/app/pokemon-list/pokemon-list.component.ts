@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {PokemonLite} from '../../models/pokemon-lite';
 import {PokeapiService} from '../services/pokeapi.service';
-import {PokemonList} from '../../models/pokemon-list';
 import {Pokemon} from '../../models/pokemon';
-import {forkJoin} from 'rxjs';
 import {PokemonFullList} from '../../models/pokemon-full-list';
 
 @Component({
@@ -13,19 +10,35 @@ import {PokemonFullList} from '../../models/pokemon-full-list';
 })
 export class PokemonListComponent implements OnInit {
 
+  // List of Pokemon to render in page.
   public pokemonList: Array<Pokemon> = [];
+  // Total of Pokemon.
   public count = 0;
+  // save the number of the next page to load.
+  public nextPage: number|null = 1;
+  // Use to know if a request is currently in progress form API.
+  public loading = false;
 
   constructor(
     private pokeapiService: PokeapiService,
   ) { }
 
   ngOnInit(): void {
-    // On the initialization of the component, we run the request to get Pokemon List from the API via an Observable.
-    // (We dont know when we will received the response)
-    this.pokeapiService.getPokemonList().subscribe((data: PokemonFullList) => {
-      this.pokemonList = data.items;
-      this.count = data.count;
-    });
+    // On the initialization of the component, we load the first dataset.
+    this.loadNextPage();
+  }
+
+  public loadNextPage(): void {
+    // If no nextPage, nothing to load.
+    // AND if not currently loading, then load next page (prevent triggering the same request twice.)
+    if (null !== this.nextPage && !this.loading) {
+      this.loading = true; // Set loading to true cause start request.
+      this.pokeapiService.getPokemonList(this.nextPage).subscribe((data: PokemonFullList) => {
+        this.pokemonList = this.pokemonList.concat(data.items); // Concat the new pokemon received into existing Array.
+        this.count = data.count;
+        this.nextPage = data.nextPage;
+        this.loading = false; // response received, so loading to false.
+      });
+    }
   }
 }
