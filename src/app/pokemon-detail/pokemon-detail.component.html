@@ -1,1 +1,15 @@
-<p>pokemon-detail works!</p>
+<div *ngIf="pokemon !== null" class="text-center">
+  <h1>
+    {{ pokemon.name }}
+  </h1>
+
+  <ul class="list-group">
+    <li *ngFor="let type of pokemon.types" class="list-group-item">
+      {{ type.type.name }}
+    </li>
+  </ul>
+
+  <img [src]="pokemon.sprites.other['official-artwork'].front_default">
+  <img [src]="pokemon.sprites.front_default">
+  <img [src]="pokemon.sprites.back_default">
+</div>

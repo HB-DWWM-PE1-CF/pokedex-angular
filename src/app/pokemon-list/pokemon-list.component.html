@@ -9,7 +9,7 @@
       >
       <div class="card-body">
         <h5 class="card-title">{{ pokemon.name }}</h5>
-        <a routerLink="/detail" class="btn btn-primary">View detail</a>
+        <a [routerLink]="['detail', getId(pokemon)]" class="btn btn-primary">View detail</a>
       </div>
     </div>
   </div>
