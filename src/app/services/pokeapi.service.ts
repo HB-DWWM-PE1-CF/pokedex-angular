@@ -10,9 +10,13 @@ import {Pokemon} from '../../models/pokemon';
 export class PokeapiService {
 
   constructor(
+    // Inject the HttpClient service given by Angular.
     private httpClient: HttpClient,
   ) { }
 
+  /**
+   * Prepare the request to get Pokemon list.
+   */
   public get pokemonList(): Observable<PokemonList> {
     return this.httpClient.get<PokemonList>('https://pokeapi.co/api/v2/pokemon');
   }
